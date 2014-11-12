@@ -25,7 +25,7 @@ public class Main extends Application {
 		try {
 			GlobalScreen.registerNativeHook();
 
-			// убиваем вывод в консоль
+			// drop info log
 			if(!debug) {
 				Logger log = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 				log.getParent().removeHandler(log.getParent().getHandlers()[0]);
@@ -34,7 +34,7 @@ public class Main extends Application {
 			FXMLLoader loader = new FXMLLoader();
 			ResourceBundle lbundle = ResourceBundle.getBundle("biz.gelicon.gta.bundles.strings", Locale.getDefault(), new UTF8Control());
 			SplitPane root = (SplitPane)FXMLLoader.load(getClass().getResource("Main.fxml"),lbundle);
-			Scene scene = new Scene(root,400,400);
+			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			
