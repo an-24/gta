@@ -27,7 +27,10 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
 
 public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMouseMotionListener, NativeMouseWheelListener {
-	private static final int MONITOR_PERIOD = 1000*60*10;
+	public static final int MONITOR_PERIOD = 1000*60*10;
+	public static final int MONITOR_PING = 1000*5;
+	public static final int MONITOR_COUNTDOWN = 1000*60;
+	
 	private static Logger log = Logger.getLogger("gta");
 	
 	private Timer timer = null;
@@ -86,19 +89,28 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 			public void run() {
 				postData();
 			}
-		}, 0, MONITOR_PERIOD);
+		}, MONITOR_PERIOD, MONITOR_PERIOD);
+		
 		timerScreenshot = new Timer();
+		doTimerScreenshot(0);
+	}
+
+
+	private void doTimerScreenshot(int offs) {
+		int period = new Random().nextInt(MONITOR_PERIOD);
 		timerScreenshot.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				try {
 					screenshot();
+					doTimerScreenshot(MONITOR_PERIOD-period);
 				} catch (Exception e) {
 					log.severe("error in screenshot(): "+e.getMessage());
 				}
 			}
-		}, 0, new Random().nextInt(MONITOR_PERIOD));
+		}, offs+period);
 	}
+	
 
 	private void postData() {
 		// TODO Auto-generated method stub

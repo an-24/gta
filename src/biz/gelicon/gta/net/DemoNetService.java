@@ -18,8 +18,7 @@ public class DemoNetService implements NetService {
 
 	@Override
 	public User connect(String user, String password) {
-		//return new User(user);
-		return null;
+		return new User(user);
 	}
 
 	@Override

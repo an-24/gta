@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,6 +94,9 @@ public class MainController {
 	private Monitor currentMonitor;
 	private User currentUser;
 	private NetService con;
+	private int countDown = 10; //in min
+	private Timer timerCountDown;
+	private Timer timerPing;
     
 	private void init() {
 		con = ConnectionFactory.getConnection(Main.getProperty("url"));
@@ -175,21 +180,19 @@ public class MainController {
         Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				
 				try {
-					updatePropertySheet();
-					LoginController.showModal(root.getScene().getWindow(), pair->{
-						currentUser = con.connect(pair.getKey(), pair.getValue());
-						if(currentUser==null) throw new Exception(Main.getResources().getString("err-invalid-user-or-password"));
-				        fillTreeTeams();
-				        updateCaption();
-					});
-				} catch (IOException e) {
+					connect();
+				} catch (Exception e) {
 					log.log(Level.SEVERE, e.getMessage(), e);
 				}
 			}
 		});
     }
+
+	private void updateStatus() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void startProcessTeam(Team team) {
 		if(team == null) return;
@@ -206,6 +209,16 @@ public class MainController {
 
 		currentMonitor = Monitor.startMonitor(currentUser);
 		
+		if(timerCountDown!=null) timerCountDown.cancel();
+		timerCountDown = new Timer();
+		timerCountDown.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				countDown--;
+			}
+		}, 0, Monitor.MONITOR_COUNTDOWN);
+		
 		updatePropertySheet();
 		updateTree();
 		updateCaption();
@@ -218,6 +231,9 @@ public class MainController {
 		
 		if(currentMonitor!=null)
 			currentMonitor.stop();
+		
+		timerCountDown.cancel();
+		timerCountDown = null;
 		
 		processTeam = null;
 		updatePropertySheet();
@@ -311,6 +327,29 @@ public class MainController {
 			}
 		}
 		return items;
+	}
+
+	private void connect() throws Exception {
+		updatePropertySheet();
+		LoginController.showModal(root.getScene().getWindow(), pair->{
+			currentUser = con.connect(pair.getKey(), pair.getValue());
+			if(currentUser==null) throw new Exception(Main.getResources().getString("err-invalid-user-or-password"));
+			
+			if(timerPing!=null) timerPing.cancel();
+			timerPing = new Timer();
+			timerPing.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					con.ping(list->{
+						//TODO
+					});
+				}
+			}, Monitor.MONITOR_PING, Monitor.MONITOR_PING);
+			
+		    fillTreeTeams();
+		    updateCaption();
+			updateStatus();
+		});
 	}
 
 }

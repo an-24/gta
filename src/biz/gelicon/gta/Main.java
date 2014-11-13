@@ -13,7 +13,6 @@ import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 
 import org.controlsfx.dialog.Dialogs;
-import org.controlsfx.dialog.Wizard;
 import org.jnativehook.GlobalScreen;
 
 import biz.gelicon.gta.utils.UTF8Control;

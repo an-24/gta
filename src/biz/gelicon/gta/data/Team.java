@@ -17,6 +17,10 @@ public class Team implements NodeView {
 	private List<Person> persons;
 	private LocalDate createDate;
 	private int limit;
+	private int workedOfDay;
+	private int workedOfWeek;
+	private int workedOfMonth;
+	private int workedOfBeginProject;
 	
 
 	public Team() {
@@ -70,6 +74,26 @@ public class Team implements NodeView {
 
 	public String getCreateDateAsText() {
 		return createDate!=null?createDate.format(dtformat):null;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+
+	public int getWorkedOfDay() {
+		return workedOfDay;
+	}
+
+	public int getWorkedOfWeek() {
+		return workedOfWeek;
+	}
+
+	public int getWorkedOfMonth() {
+		return workedOfMonth;
+	}
+
+	public int getWorkedOfBeginProject() {
+		return workedOfBeginProject;
 	}
 
 }
