@@ -1,10 +1,13 @@
-package biz.gelicon.gta;
+package biz.gelicon.gta.forms;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,23 +30,23 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import biz.gelicon.gta.Main;
+import biz.gelicon.gta.Monitor;
+import biz.gelicon.gta.User;
 import biz.gelicon.gta.data.Person;
 import biz.gelicon.gta.data.Team;
+import biz.gelicon.gta.net.ConnectionFactory;
+import biz.gelicon.gta.net.NetService;
 import biz.gelicon.gta.view.NodeView;
 
 public class MainController {
 
-    private static final String GTA_APP_NAME = "Gelicon Team App";
-
 	@FXML
     private ResourceBundle resources;
-
     @FXML
     private URL location;
-    
     @FXML
     private Control root;
-
     @FXML
     private TreeTableView<NodeView> tree;
     @FXML
@@ -66,12 +69,7 @@ public class MainController {
     private Tab tabTeam;
     @FXML
     private Button btnStart;
-
-	private Team processTeam = null;
-	private Monitor currentMonitor;
-
-	private User currentUser;
-    
+	
     @FXML
 	public void initialize() {
         assert root != null : "fx:id=\"root\" was not injected: check your FXML file 'Main.fxml'.";
@@ -84,6 +82,19 @@ public class MainController {
         assert createDateTextField != null : "fx:id=\"createDateTextField\" was not injected: check your FXML file 'Main.fxml'.";
         assert onlineCheckBox != null : "fx:id=\"onlineCheckBox\" was not injected: check your FXML file 'Main.fxml'.";
         assert btnStart != null : "fx:id=\"btnStart\" was not injected: check your FXML file 'Main.fxml'.";
+        
+        init();
+    }   
+	
+    private static final String GTA_APP_NAME = "Gelicon Team App";
+    private static final Logger log = Logger.getLogger("gta");
+	private Team processTeam = null;
+	private Monitor currentMonitor;
+	private User currentUser;
+	private NetService con;
+    
+	private void init() {
+		con = ConnectionFactory.getConnection(Main.getProperty("url"));
 
         tree.setRoot(new TreeItem<NodeView>(new NodeView() {
 			@Override
@@ -161,13 +172,21 @@ public class MainController {
 			}
 		});
         
-        fillTreeTeams();
-        
-        
         Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-		        updateCaption();
+				
+				try {
+					updatePropertySheet();
+					LoginController.showModal(root.getScene().getWindow(), pair->{
+						currentUser = con.connect(pair.getKey(), pair.getValue());
+						if(currentUser==null) throw new Exception(Main.getResources().getString("err-invalid-user-or-password"));
+				        fillTreeTeams();
+				        updateCaption();
+					});
+				} catch (IOException e) {
+					log.log(Level.SEVERE, e.getMessage(), e);
+				}
 			}
 		});
     }
@@ -278,9 +297,7 @@ public class MainController {
 
 	private void fillTreeTeams() {
 		tree.getRoot().getChildren().clear();
-		//FIXME demo
-		tree.getRoot().getChildren().addAll(makeTreeItems(Team.getDemoTeams()));
-		
+		tree.getRoot().getChildren().addAll(makeTreeItems(con.getTeams()));
 	}
 
 	private Collection<TreeItem<NodeView>> makeTreeItems(List<? extends NodeView> nodes) {
