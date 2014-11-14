@@ -26,6 +26,8 @@ import org.jnativehook.mouse.NativeMouseMotionListener;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
 
+import biz.gelicon.gta.utils.Handler;
+
 public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMouseMotionListener, NativeMouseWheelListener {
 	public static final int MONITOR_PERIOD = 1000*60*10;
 	public static final int MONITOR_PING = 1000*5;
@@ -41,15 +43,17 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 	private int mouse = 0;
 	private int mouseMove = 0;
 	private BufferedImage capture;
+	private Handler<Void> afterPost;
 
 	
-	Monitor(User currentUser) {
+	Monitor(User currentUser, Handler<Void> afterPost) {
 		this.currentUser = currentUser;
+		this.afterPost = afterPost;
 	}
 
 
-	public static Monitor startMonitor(User currentUser) {
-		Monitor m = new Monitor(currentUser);
+	public static Monitor startMonitor(User currentUser, Handler<Void> afterPost) {
+		Monitor m = new Monitor(currentUser, afterPost);
 		m.startTimer();
 		GlobalScreen.getInstance().addNativeKeyListener(m);
 		GlobalScreen.getInstance().addNativeMouseListener(m);
@@ -70,7 +74,11 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 			GlobalScreen.getInstance().removeNativeMouseListener(this);
 			GlobalScreen.getInstance().removeNativeMouseMotionListener(this);
 			GlobalScreen.getInstance().removeNativeMouseWheelListener(this);
-			postData();
+			try {
+				postData();
+			} catch (Exception e) {
+				log.log(Level.SEVERE, e.getMessage(), e);
+			}
 		}	
 	}
 
@@ -87,7 +95,11 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				postData();
+				try {
+					postData();
+				} catch (Exception e) {
+					log.log(Level.SEVERE, e.getMessage(), e);
+				}
 			}
 		}, MONITOR_PERIOD, MONITOR_PERIOD);
 		
@@ -112,8 +124,10 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 	}
 	
 
-	private void postData() {
+	private void postData() throws Exception {
 		// TODO Auto-generated method stub
+		
+		if(afterPost!=null) afterPost.handle(null);
 		log.info("Data posted in server");
 	}
 

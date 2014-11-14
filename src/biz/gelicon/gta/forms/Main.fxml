@@ -7,81 +7,118 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<SplitPane fx:id="root" dividerPositions="0.4027504911591356" prefHeight="381.0" prefWidth="546.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="biz.gelicon.gta.forms.MainController">
-   <items>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+
+<VBox fx:id="root" prefHeight="491.0" prefWidth="608.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="biz.gelicon.gta.forms.MainController">
+   <children>
+      <MenuBar VBox.vgrow="NEVER">
+        <menus>
+          <Menu fx:id="miFile" mnemonicParsing="false" text="%mnu_file">
+            <items>
+                  <MenuItem fx:id="miConnect" mnemonicParsing="false" text="%mnu_connect" />
+                  <MenuItem fx:id="miDisconnect" mnemonicParsing="false" text="%mnu_disconnect" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem fx:id="miSettings" mnemonicParsing="false" text="%mnu_settings" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+              <MenuItem fx:id="miExit" mnemonicParsing="false" text="%mnu_exit" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="%mnu_help">
+            <items>
+              <MenuItem fx:id="miAbout" mnemonicParsing="false" text="%mnu_about" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <SplitPane dividerPositions="0.32894736842105265" VBox.vgrow="ALWAYS">
+         <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TreeTableView fx:id="tree" prefHeight="399.0" prefWidth="252.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <columnResizePolicy>
+                        <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TreeTableView>
+               </children>
+            </AnchorPane>
+          <AnchorPane prefHeight="399.0" prefWidth="266.0">
+               <children>
+                  <TabPane fx:id="propertySheetTabPane" layoutX="25.0" layoutY="43.0" prefHeight="399.0" prefWidth="301.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <tabs>
+                      <Tab fx:id="tabTeam" text="%team">
+                           <content>
+                              <GridPane vgap="5.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="NEVER" maxWidth="141.0" minWidth="10.0" prefWidth="97.0" />
+                                  <ColumnConstraints hgrow="ALWAYS" minWidth="50.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints vgrow="NEVER" />
+                                  <RowConstraints vgrow="NEVER" />
+                                  <RowConstraints vgrow="NEVER" />
+                                    <RowConstraints vgrow="NEVER" />
+                                    <RowConstraints vgrow="NEVER" />
+                                    <RowConstraints maxHeight="281.0" minHeight="10.0" prefHeight="248.0" vgrow="ALWAYS" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="%team" />
+                                    <TextField fx:id="teamTextField" editable="false" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="activeCheckBox" disable="true" mnemonicParsing="false" text="%active" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <Label text="%crdate" GridPane.rowIndex="2" />
+                                    <TextField fx:id="createDateTextField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Button fx:id="btnStart" mnemonicParsing="false" text="%start" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
+                                    <TableView fx:id="tableTeamTimes" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="180.0" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.vgrow="NEVER" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                              </GridPane>
+                           </content>
+                        </Tab>
+                        <Tab fx:id="tabPerson" text="%person">
+                           <content>
+                              <GridPane vgap="5.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="NEVER" maxWidth="146.0" minWidth="10.0" prefWidth="114.0" />
+                                  <ColumnConstraints hgrow="ALWAYS" minWidth="50.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints vgrow="NEVER" />
+                                  <RowConstraints vgrow="NEVER" />
+                                  <RowConstraints vgrow="NEVER" />
+                                    <RowConstraints maxHeight="277.0" minHeight="10.0" prefHeight="277.0" vgrow="ALWAYS" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label text="%nic" />
+                                    <TextField fx:id="nicTextField" editable="false" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="onlineCheckBox" disable="true" mnemonicParsing="false" text="%online" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <Label text="%post" GridPane.rowIndex="1" />
+                                    <TextField fx:id="postTextField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </GridPane>
+                           </content>
+                        </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+      <HBox spacing="5.0" VBox.vgrow="NEVER">
          <children>
-            <TreeTableView fx:id="tree" prefHeight="399.0" prefWidth="252.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <columnResizePolicy>
-                  <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TreeTableView>
+            <Label text="%user" />
+            <Label fx:id="lUser" text="%connect-needed" />
+            <Label fx:id="lCountdown">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Label>
          </children>
-      </AnchorPane>
-    <AnchorPane prefHeight="399.0" prefWidth="266.0">
-         <children>
-            <TabPane fx:id="propertySheetTabPane" layoutX="25.0" layoutY="43.0" prefHeight="399.0" prefWidth="301.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <tabs>
-                <Tab fx:id="tabTeam" text="%team">
-                     <content>
-                        <GridPane vgap="5.0">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="NEVER" maxWidth="141.0" minWidth="10.0" prefWidth="97.0" />
-                            <ColumnConstraints hgrow="ALWAYS" minWidth="50.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="NEVER" />
-                              <RowConstraints vgrow="NEVER" />
-                              <RowConstraints maxHeight="281.0" minHeight="10.0" prefHeight="248.0" vgrow="ALWAYS" />
-                          </rowConstraints>
-                           <children>
-                              <Label text="%team" />
-                              <TextField fx:id="teamTextField" editable="false" GridPane.columnIndex="1" />
-                              <CheckBox fx:id="activeCheckBox" disable="true" mnemonicParsing="false" text="%active" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Label text="%crdate" GridPane.rowIndex="2" />
-                              <TextField fx:id="createDateTextField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Button fx:id="btnStart" mnemonicParsing="false" text="%start" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                           <opaqueInsets>
-                              <Insets />
-                           </opaqueInsets>
-                        </GridPane>
-                     </content>
-                  </Tab>
-                  <Tab fx:id="tabPerson" text="%person">
-                     <content>
-                        <GridPane vgap="5.0">
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="NEVER" maxWidth="146.0" minWidth="10.0" prefWidth="114.0" />
-                            <ColumnConstraints hgrow="ALWAYS" minWidth="50.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="NEVER" />
-                            <RowConstraints vgrow="NEVER" />
-                              <RowConstraints maxHeight="277.0" minHeight="10.0" prefHeight="277.0" vgrow="ALWAYS" />
-                          </rowConstraints>
-                           <children>
-                              <Label text="%nic" />
-                              <TextField fx:id="nicTextField" editable="false" GridPane.columnIndex="1" />
-                              <CheckBox fx:id="onlineCheckBox" disable="true" mnemonicParsing="false" text="%online" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                              <Label text="%post" GridPane.rowIndex="1" />
-                              <TextField fx:id="postTextField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                           </children>
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </GridPane>
-                     </content>
-                  </Tab>
-              </tabs>
-            </TabPane>
-         </children>
-      </AnchorPane>
-   </items>
-</SplitPane>
+      </HBox>
+   </children>
+</VBox>

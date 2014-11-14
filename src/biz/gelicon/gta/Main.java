@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 
 import org.controlsfx.dialog.Dialogs;
@@ -38,7 +38,7 @@ public class Main extends Application {
 			}
 
 			lbundle = ResourceBundle.getBundle("biz.gelicon.gta.bundles.strings", Locale.getDefault(), new UTF8Control());
-			SplitPane root = (SplitPane)FXMLLoader.load(getClass().getResource("forms/Main.fxml"),lbundle);
+			Parent root = (Parent)FXMLLoader.load(getClass().getResource("forms/Main.fxml"),lbundle);
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -73,5 +73,13 @@ public class Main extends Application {
 	      .title(lbundle.getString("frm-title-errorbox"))
 	      .message(m)
 	      .showError();
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void showErrorBox(Exception ex) {
+		Dialogs.create()
+	      .title(lbundle.getString("frm-title-errorbox"))
+	      .message(ex.getMessage())
+	      .showException(ex);
 	}
 }

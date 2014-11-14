@@ -69,7 +69,7 @@ public class LoginController {
 			try {
 				handler.handle(new Pair<String,String>(tfName.getText(),tfPassword.getText()));
 			} catch (Exception ex) {
-				Main.showErrorBox(ex.getMessage());
+				Main.showErrorBox(ex);
 				return;
 			}
 			root.getScene().getWindow().hide();
@@ -97,6 +97,7 @@ public class LoginController {
 	    stage.setTitle(Main.getResources().getString("frm-title-login"));
 	    stage.initModality(Modality.WINDOW_MODAL);
 	    stage.initOwner(owner);
+	    stage.setResizable(false);
 		stage.show();
 	}
 
