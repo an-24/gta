@@ -39,6 +39,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Pair;
+import biz.gelicon.gta.GTATray;
 import biz.gelicon.gta.Main;
 import biz.gelicon.gta.Monitor;
 import biz.gelicon.gta.User;
@@ -148,7 +149,6 @@ public class MainController {
     @FXML
     private TreeTableView<NodeView> tree;
     
-    private static final String GTA_APP_NAME = "Gelicon Team App";
     private static final Logger log = Logger.getLogger("gta");
 	private Team processTeam = null;
 	private Monitor currentMonitor;
@@ -245,8 +245,7 @@ public class MainController {
 		});
         
         miExit.setOnAction(e->{
-        	Platform.exit();
-        	System.exit(0);
+        	Main.quit();
         });
         
         miConnect.setOnAction(e->{
@@ -278,6 +277,13 @@ public class MainController {
         	miConnect.fire();
         });
     }
+
+	private void updateTray() {
+		Stage win = (Stage)root.getScene().getWindow();
+		if(currentUser==null) GTATray.getInstance().updateState(GTATray.State.stInactive,win.getTitle()); else
+			if(processTeam==null) GTATray.getInstance().updateState(GTATray.State.stReady,win.getTitle());else
+				GTATray.getInstance().updateState(GTATray.State.stActive,win.getTitle());
+	}
 
 
 	private void updateStatus() {
@@ -321,7 +327,7 @@ public class MainController {
 		updatePropertySheet();
 		updateTree();
 		updateCaption();
-		
+		updateTray();
 	}
 
 	private void finishProcessTeam(Team team) {
@@ -339,12 +345,13 @@ public class MainController {
 		updatePropertySheet();
 		updateTree(team);
 		updateCaption();
+		updateTray();
 	}
 
 	private void updateCaption() {
 		Stage win = (Stage)root.getScene().getWindow();
-		if(processTeam==null) win.setTitle(GTA_APP_NAME+" (stopped)");else
-			win.setTitle(GTA_APP_NAME+" - active \""+processTeam.getName()+"\"");
+		if(processTeam==null) win.setTitle(Main.GTA_APP_NAME+" (stopped)");else
+			win.setTitle(Main.GTA_APP_NAME+" - active \""+processTeam.getName()+"\"");
 	}
 
 	
@@ -466,8 +473,10 @@ public class MainController {
 		    fillTreeTeams();
 		    updateCaption();
 			updateStatus();
+			updateTray();
 		});
 	}
+
 
 	private void disconnect() {
 		if(currentUser==null) return;
@@ -481,5 +490,6 @@ public class MainController {
 		clearTreeTeams();
 		updatePropertySheet();
 		updateStatus();
+		updateTray();
 	}
 }

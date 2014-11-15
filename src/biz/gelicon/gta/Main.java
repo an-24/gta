@@ -1,12 +1,25 @@
 package biz.gelicon.gta;
 	
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.TrayIcon.MessageType;
+import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,13 +32,19 @@ import biz.gelicon.gta.utils.UTF8Control;
 
 
 public class Main extends Application {
+
+	public static final String GTA_APP_NAME = "Gelicon Team App";
 	private static boolean debug = false;
 	private static Properties settings;
 	private static ResourceBundle lbundle;
+    private static final Logger log = Logger.getLogger("gta");
+    private static Stage primaryStage;
 
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			this.primaryStage = primaryStage;
+			
 			settings = new Properties();
 			settings.load(new FileInputStream("gta.properties"));
 			
@@ -43,18 +62,22 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			
+			Platform.setImplicitExit(false);
 			primaryStage.setOnCloseRequest(event -> {
-				GlobalScreen.unregisterNativeHook();
-				System.runFinalization();
-                System.exit(0);
+				if(!SystemTray.isSupported()) Main.quit(); 
+										else primaryStage.hide();
 			});
 			
+			if (SystemTray.isSupported()) {
+				GTATray.installTray();
+			};
 			primaryStage.show();
 		} catch(Exception e) {
+		
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -81,5 +104,16 @@ public class Main extends Application {
 	      .title(lbundle.getString("frm-title-errorbox"))
 	      .message(ex.getMessage())
 	      .showException(ex);
+	}
+
+	public static void quit() {
+		GlobalScreen.unregisterNativeHook();
+		System.runFinalization();
+    	Platform.exit();
+    	System.exit(0);
+	}
+
+	public static Stage getPrimaryStage() {
+		return primaryStage;
 	}
 }
