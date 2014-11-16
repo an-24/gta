@@ -106,6 +106,14 @@ public class Main extends Application {
 	      .showException(ex);
 	}
 
+	@SuppressWarnings("deprecation")
+	public static void showErrorBox(String m, Exception ex) {
+		Dialogs.create()
+	      .title(lbundle.getString("frm-title-errorbox"))
+	      .message(m)
+	      .showException(ex);
+	}
+	
 	public static void quit() {
 		GlobalScreen.unregisterNativeHook();
 		System.runFinalization();

@@ -10,7 +10,7 @@ import biz.gelicon.gta.data.Team;
 import biz.gelicon.gta.utils.Handler;
 
 public class DemoNetService implements NetService {
-	private Logger log = Logger.getLogger("gta-demo-service");
+	private Logger log = Logger.getLogger("gta");
 
 	public DemoNetService(String url) {
 		// empty

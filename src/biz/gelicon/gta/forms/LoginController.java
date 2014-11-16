@@ -69,7 +69,8 @@ public class LoginController {
 			try {
 				handler.handle(new Pair<String,String>(tfName.getText(),tfPassword.getText()));
 			} catch (Exception ex) {
-				Main.showErrorBox(ex);
+				Main.showErrorBox(Main.getResources().getString("err-user-login"),ex);
+				log.log(Level.SEVERE, ex.getMessage(), ex);
 				return;
 			}
 			root.getScene().getWindow().hide();
