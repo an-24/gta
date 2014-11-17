@@ -157,6 +157,8 @@ public class MainController {
 	private int countDown = Monitor.MONITOR_PERIOD/1000/60; 
 	private Timer timerCountDown;
 	private Timer timerPing;
+	private String safeUserName = "";
+	private boolean networkAvailable =  true;
     
 	private void init() {
 		con = ConnectionFactory.getConnection(Main.getProperty("url"));
@@ -282,7 +284,8 @@ public class MainController {
 		Stage win = (Stage)root.getScene().getWindow();
 		if(currentUser==null) GTATray.getInstance().updateState(GTATray.State.stInactive,win.getTitle()); else
 			if(processTeam==null) GTATray.getInstance().updateState(GTATray.State.stReady,win.getTitle());else
-				GTATray.getInstance().updateState(GTATray.State.stActive,win.getTitle());
+				if(!networkAvailable) GTATray.getInstance().updateState(GTATray.State.stNetNotAvaible,win.getTitle());else 
+					GTATray.getInstance().updateState(GTATray.State.stActive,win.getTitle());
 	}
 
 
@@ -457,7 +460,9 @@ public class MainController {
 		updatePropertySheet();
 		LoginController.showModal(root.getScene().getWindow(), pair->{
 			currentUser = con.connect(pair.getKey(), pair.getValue());
-			if(currentUser==null) throw new Exception(Main.getResources().getString("err-invalid-user-or-password"));
+			if(currentUser==null) throw 
+				new LoginController.LoginException(Main.getResources().getString("err-invalid-user-or-password"));
+			safeUserName = currentUser.getNic();
 			
 			if(timerPing!=null) timerPing.cancel();
 			timerPing = new Timer();
@@ -465,7 +470,23 @@ public class MainController {
 				@Override
 				public void run() {
 					con.ping(list->{
-						//TODO
+						con.ping(state->{
+							switch (state) {
+							case networkNotAvailable:
+								networkAvailable = false;
+								updateTray();
+								break;
+							case sessionLost:
+								Platform.runLater(()->{
+									reconnect();									
+								});
+								break;
+							default:
+								networkAvailable = true;
+								updateTray();
+								break;
+							}
+						});
 					});
 				}
 			}, Monitor.MONITOR_PING, Monitor.MONITOR_PING);
@@ -474,9 +495,23 @@ public class MainController {
 		    updateCaption();
 			updateStatus();
 			updateTray();
+		}, loginController->{
+			loginController.getTfName().setText(safeUserName );
 		});
 	}
 
+
+	protected void reconnect() {
+		disconnect();
+		// restore main win
+		if(Main.getPrimaryStage().isIconified()) Main.getPrimaryStage().setIconified(false);else
+			Main.getPrimaryStage().show();
+		try {
+			connect();
+		} catch (Exception e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
+		}
+	}
 
 	private void disconnect() {
 		if(currentUser==null) return;

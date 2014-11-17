@@ -13,13 +13,14 @@ import javafx.application.Platform;
 import javax.imageio.ImageIO;
 
 public class GTATray {
-	public static enum State {stInactive, stReady,stActive};
+	public static enum State {stInactive, stReady,stActive, stNetNotAvaible};
 	
     private static final Logger log = Logger.getLogger("gta");
 	private static GTATray instance;
 	private BufferedImage imgInactive;
 	private BufferedImage imgReady;
 	private BufferedImage imgActive;
+	private BufferedImage imgNetNotAvaible;
 	private TrayIcon trayIcon;
 
 	GTATray() {
@@ -27,6 +28,7 @@ public class GTATray {
 			imgInactive = ImageIO.read(Main.class.getResourceAsStream("resources/inactive.png"));
 			imgReady = ImageIO.read(Main.class.getResourceAsStream("resources/ready.png"));
 			imgActive = ImageIO.read(Main.class.getResourceAsStream("resources/active.png"));
+			imgNetNotAvaible = ImageIO.read(Main.class.getResourceAsStream("resources/netnotavaible.png"));
 
 			if (SystemTray.isSupported()) {
 				PopupMenu popup = new PopupMenu();
@@ -87,6 +89,9 @@ public class GTATray {
 			break;
 		case stReady:
 			trayIcon.setImage(imgReady);
+			break;
+		case stNetNotAvaible:
+			trayIcon.setImage(imgNetNotAvaible);
 			break;
 		default:
 			break;

@@ -35,7 +35,7 @@ public class LoginController {
     private VBox root;
     @FXML
     private TextField tfName;
-    @FXML
+	@FXML
     private Button bCancel;
     @FXML
     private ImageView ivKeys;
@@ -57,6 +57,14 @@ public class LoginController {
         }
     }
 
+    public static class LoginException extends Exception {
+
+		public LoginException(String m) {
+			super(m);
+		}
+
+	}
+
 	private Handler<Pair<String,String>> handler;
     private static final Logger log = Logger.getLogger("gta");
     
@@ -68,6 +76,9 @@ public class LoginController {
 			}
 			try {
 				handler.handle(new Pair<String,String>(tfName.getText(),tfPassword.getText()));
+			} catch(LoginException ex) {
+				Main.showErrorBox(ex.getMessage());
+				return;
 			} catch (Exception ex) {
 				Main.showErrorBox(Main.getResources().getString("err-user-login"),ex);
 				log.log(Level.SEVERE, ex.getMessage(), ex);
@@ -87,7 +98,7 @@ public class LoginController {
 		this.handler = handler; 
 	}
 	
-	public static void showModal(Window owner,Handler<Pair<String,String>> handler) throws IOException {
+	public static void showModal(Window owner,Handler<Pair<String,String>> handler, Handler<LoginController> beforeshow) throws IOException {
 		Stage stage = new Stage();
 		FXMLLoader loader = new FXMLLoader(Main.class.getResource("forms/Login.fxml"), Main.getResources());
 		Parent rpane =  loader.load();
@@ -99,7 +110,22 @@ public class LoginController {
 	    stage.initModality(Modality.WINDOW_MODAL);
 	    stage.initOwner(owner);
 	    stage.setResizable(false);
+	    stage.setOnShown(e->{
+	    	if(beforeshow!=null)
+				try {
+					beforeshow.handle((LoginController)loader.getController());
+				} catch (Exception ex) {
+					log.log(Level.SEVERE, ex.getMessage(),ex);
+				}
+	    });
 		stage.show();
 	}
 
+    public PasswordField getTfPassword() {
+		return tfPassword;
+	}
+
+	public TextField getTfName() {
+		return tfName;
+	}
 }

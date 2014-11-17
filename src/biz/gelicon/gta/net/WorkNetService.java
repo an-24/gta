@@ -6,16 +6,20 @@ import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.jackson.JacksonFeature;
 
 import biz.gelicon.gta.User;
 import biz.gelicon.gta.data.Team;
@@ -30,7 +34,9 @@ public class WorkNetService implements NetService {
 	public WorkNetService(String url) {
 		this.url = url;
 		ClientConfig config = new ClientConfig();
-	    client = ClientBuilder.newClient(config);
+	    client = ClientBuilder.newBuilder()
+                .register(JacksonFeature.class)
+                .build();
 	}
 	
 	@Override
@@ -41,22 +47,47 @@ public class WorkNetService implements NetService {
 	    args.add(password);
 	    Response result = target.path("login")
 	    	.request(MediaType.APPLICATION_JSON_TYPE)
-	    	.post(Entity.json(args));
-	    token = (String) result.getEntity();
-	    if(token!=null || !token.isEmpty()) return new User(user);
-		return null;
+	    	.accept(MediaType.APPLICATION_JSON_TYPE)
+	    	.post(Entity.json(new GenericEntity<List<String>>(args) {}));
+	    if(result.getStatus() != Status.OK.getStatusCode()) 
+	    	throw new Exception(result.getStatus()+": "+Status.fromStatusCode(result.getStatus()).getReasonPhrase());
+	    if(!result.hasEntity()) return null;
+	    token = result.readEntity(String.class);
+	    return new User(user);
 	}
 
 	@Override
-	public void ping(Handler<List<Team>> handler) {
-		// TODO Auto-generated method stub
-
+	public void ping(Handler<NetState> handler) {
+	    try {
+			WebTarget target = client.target(new URI(url));
+		    Response result = target.path("ping")
+			    	.request(MediaType.APPLICATION_JSON_TYPE)
+			    	.accept(MediaType.APPLICATION_JSON_TYPE)
+			    	.post(Entity.json(token));
+		    if(result.getStatus() != Status.OK.getStatusCode() || !result.hasEntity()) {
+		    	handler.handle(NetState.networkNotAvailable);
+		    } else {
+			    Boolean b = result.readEntity(Boolean.class);
+		    	handler.handle(b?NetState.sessionValid:NetState.sessionLost);
+		    }
+		} catch (URISyntaxException e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
+			try {
+				handler.handle(NetState.networkNotAvailable);
+			} catch (Exception e1) {
+				e1.initCause(e);
+				log.log(Level.SEVERE, e1.getMessage(), e1);
+			}
+		} catch (Exception e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
+		}
 	}
 
 	@Override
 	public List<Team> getTeams() {
+		List<Team> teams = new ArrayList<>(); 
 		// TODO Auto-generated method stub
-		return null;
+		return teams;
 	}
 
 	@Override

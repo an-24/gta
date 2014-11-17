@@ -22,8 +22,11 @@ public class DemoNetService implements NetService {
 	}
 
 	@Override
-	public void ping(Handler<List<Team>> handler) {
-		// empty
+	public void ping(Handler<NetService.NetState> handler) {
+		try {
+			handler.handle(NetService.NetState.sessionValid);
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
