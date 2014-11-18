@@ -1,6 +1,16 @@
 package biz.gelicon.gta.forms;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -34,6 +44,7 @@ import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableColumn.CellDataFeatures;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -162,7 +173,7 @@ public class MainController {
     
 	private void init() {
 		con = ConnectionFactory.getConnection(Main.getProperty("url"));
-
+		
         tree.setRoot(new TreeItem<NodeView>(new NodeView() {
 			@Override
 			public String getText() {
@@ -268,14 +279,16 @@ public class MainController {
         });
         
         miSettings.setOnAction(e->{
-			//TODO
+			//TODO settings
         });
         
         miAbout.setOnAction(e->{
-			//TODO
+			//TODO about
         });
         
         Platform.runLater(()->{
+    		Stage mainWin = (Stage)root.getScene().getWindow();
+    		mainWin.getIcons().add(new Image(MainController.class.getResourceAsStream("../resources/about.png")));
         	miConnect.fire();
         });
     }
@@ -283,8 +296,8 @@ public class MainController {
 	private void updateTray() {
 		Stage win = (Stage)root.getScene().getWindow();
 		if(currentUser==null) GTATray.getInstance().updateState(GTATray.State.stInactive,win.getTitle()); else
-			if(processTeam==null) GTATray.getInstance().updateState(GTATray.State.stReady,win.getTitle());else
-				if(!networkAvailable) GTATray.getInstance().updateState(GTATray.State.stNetNotAvaible,win.getTitle());else 
+			if(!networkAvailable) GTATray.getInstance().updateState(GTATray.State.stNetNotAvaible,win.getTitle());else 
+				if(processTeam==null) GTATray.getInstance().updateState(GTATray.State.stReady,win.getTitle());else
 					GTATray.getInstance().updateState(GTATray.State.stActive,win.getTitle());
 	}
 
@@ -307,7 +320,7 @@ public class MainController {
 		team.setActive(true);
 		processTeam = team;
 
-		currentMonitor = Monitor.startMonitor(currentUser, v->{
+		currentMonitor = Monitor.startMonitor(currentUser, team, v->{
 			Platform.runLater(()->{
 				lCountdown.setText(resources.getString("massage-postdata-succ"));
 			});
@@ -463,6 +476,7 @@ public class MainController {
 			if(currentUser==null) throw 
 				new LoginController.LoginException(Main.getResources().getString("err-invalid-user-or-password"));
 			safeUserName = currentUser.getNic();
+			networkAvailable = true;
 			
 			if(timerPing!=null) timerPing.cancel();
 			timerPing = new Timer();
@@ -491,6 +505,8 @@ public class MainController {
 				}
 			}, Monitor.MONITOR_PING, Monitor.MONITOR_PING);
 			
+			startPoolObserver();
+			
 		    fillTreeTeams();
 		    updateCaption();
 			updateStatus();
@@ -500,6 +516,72 @@ public class MainController {
 		});
 	}
 
+
+	private void startPoolObserver() {
+		try {
+			WatchService watcher = FileSystems.getDefault().newWatchService();
+			Path dir = Paths.get(Main.POOL_PATH);
+			dir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
+			Thread t = new Thread(()->{
+				while (true) {
+				    WatchKey key;
+				    try {
+				        // wait for a key to be available
+				        key = watcher.take();
+				    } catch (InterruptedException ex) {
+				        return;
+				    }
+				    for (WatchEvent<?> event : key.pollEvents()) {
+				        // get event type
+				        WatchEvent.Kind<?> kind = event.kind();
+				        // новое сообщение
+				        if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+					        // get file name
+					        @SuppressWarnings("unchecked")
+					        WatchEvent<Path> ev = (WatchEvent<Path>) event;
+					        Path fileName = ev.context();
+					        if(fileName.toFile().getName().startsWith("mess")) {
+						        try {
+						        	immediatelyPostData(fileName.toFile().getName());
+								} catch (Exception e) {
+									log.log(Level.SEVERE, e.getMessage(), e);
+								}
+					        }
+				        }
+				    }
+			        // проверка старых фалов
+			        try {
+						String[] files = dir.toFile().list((d, name)->{
+							if(name.startsWith("mess")) return true; 
+							return false;
+						});
+						for (int i = 0; i < files.length; i++) {
+				        	immediatelyPostData(files[i]);
+						}
+					} catch (Exception e) {
+						log.log(Level.SEVERE, e.getMessage(), e);
+					}
+				    // IMPORTANT: The key must be reset after processed
+				    boolean valid = key.reset();
+				    if (!valid) {
+				        break;
+				    }
+				}				
+			});
+			t.setDaemon(true);
+			t.start();
+			
+			
+		} catch (IOException e) {
+			log.log(Level.SEVERE, e.getMessage(), e);
+		}
+		
+	}
+	
+	private void immediatelyPostData(String fname) throws Exception {
+    	File fmessage = new File(Main.POOL_PATH,fname);
+		currentMonitor.immediatelyPostData(fmessage, true);
+	}
 
 	protected void reconnect() {
 		disconnect();

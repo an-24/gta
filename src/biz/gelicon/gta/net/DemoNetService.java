@@ -1,11 +1,14 @@
 package biz.gelicon.gta.net;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 import biz.gelicon.gta.User;
+import biz.gelicon.gta.data.Message;
 import biz.gelicon.gta.data.Team;
 import biz.gelicon.gta.utils.Handler;
 
@@ -35,9 +38,8 @@ public class DemoNetService implements NetService {
 	}
 
 	@Override
-	public void postData(LocalDate beg, LocalDate finish, int key, int mouse,
-			int mouseMove, BufferedImage screenshot) {
-		log.info("data posted ["+beg+"-"+finish+" key="+key+" mouse="+mouse+" mouseMove="+mouseMove+" image="+screenshot+"]");
+	public void postData(Message message, Image img) {
+		log.info("data posted "+message);
 	}
 
 }

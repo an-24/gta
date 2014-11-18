@@ -8,7 +8,10 @@ import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 import javafx.application.Platform;
+
+import javafx.stage.Window;
 
 import javax.imageio.ImageIO;
 
@@ -37,8 +40,10 @@ public class GTATray {
 				item = new MenuItem(Main.getResources().getString("mnu_open"));
 		        item.addActionListener(e->{
 		        	Platform.runLater(()->{
-		        		if(Main.getPrimaryStage().isIconified()) Main.getPrimaryStage().setIconified(false);else
+		        		if(Main.getPrimaryStage().isIconified()) Main.getPrimaryStage().setIconified(false);else {
 		        			Main.getPrimaryStage().show();
+		        		}
+		        			
 		        	});
 		        });
 		        popup.add(item);

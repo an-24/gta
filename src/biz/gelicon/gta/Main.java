@@ -38,6 +38,7 @@ public class Main extends Application {
 	private static Properties settings;
 	private static ResourceBundle lbundle;
     private static final Logger log = Logger.getLogger("gta");
+	public static final String POOL_PATH = "pool";
     private static Stage primaryStage;
 
 	@Override

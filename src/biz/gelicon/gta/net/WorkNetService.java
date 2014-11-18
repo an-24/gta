@@ -1,9 +1,7 @@
 package biz.gelicon.gta.net;
 
-import java.awt.image.BufferedImage;
+import java.awt.Image;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,10 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import biz.gelicon.gta.User;
+import biz.gelicon.gta.data.Message;
 import biz.gelicon.gta.data.Team;
 import biz.gelicon.gta.utils.Handler;
 
@@ -33,7 +31,6 @@ public class WorkNetService implements NetService {
 
 	public WorkNetService(String url) {
 		this.url = url;
-		ClientConfig config = new ClientConfig();
 	    client = ClientBuilder.newBuilder()
                 .register(JacksonFeature.class)
                 .build();
@@ -70,7 +67,7 @@ public class WorkNetService implements NetService {
 			    Boolean b = result.readEntity(Boolean.class);
 		    	handler.handle(b?NetState.sessionValid:NetState.sessionLost);
 		    }
-		} catch (URISyntaxException e) {
+		} catch (Exception e) {
 			log.log(Level.SEVERE, e.getMessage(), e);
 			try {
 				handler.handle(NetState.networkNotAvailable);
@@ -78,9 +75,7 @@ public class WorkNetService implements NetService {
 				e1.initCause(e);
 				log.log(Level.SEVERE, e1.getMessage(), e1);
 			}
-		} catch (Exception e) {
-			log.log(Level.SEVERE, e.getMessage(), e);
-		}
+		};
 	}
 
 	@Override
@@ -91,10 +86,9 @@ public class WorkNetService implements NetService {
 	}
 
 	@Override
-	public void postData(LocalDate beg, LocalDate finish, int key, int mouse,
-			int mouseMove, BufferedImage screenshot) {
+	public void postData(Message message, Image img) {
 		// TODO Auto-generated method stub
-
+		log.info("Data posted in server");
 	}
 
 }
