@@ -7,6 +7,8 @@ import java.util.logging.LogRecord;
 
 import org.jnativehook.GlobalScreen;
 
+import com.fasterxml.jackson.databind.Module.SetupContext;
+
 public class LogHandler extends ConsoleHandler {
 
 	@Override
@@ -16,5 +18,6 @@ public class LogHandler extends ConsoleHandler {
 				record.getLevel()==Level.INFO) return;
 		super.publish(record);
 	}
+
 
 }

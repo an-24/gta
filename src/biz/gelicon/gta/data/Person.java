@@ -9,17 +9,17 @@ import biz.gelicon.gta.view.NodeView;
 public class Person  implements NodeView {
 	private String nic;
 	private String post;
-	private boolean active;
+	private Boolean active;
 
 	protected Person(String nic, String post) {
 		this.nic = nic;
 		this.post = post;
 	}
 	
-	public boolean isActive() {
+	public  Boolean isActive() {
 		return active;
 	}
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 	public String getNic() {

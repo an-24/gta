@@ -181,7 +181,7 @@ public class MainController {
 			}
 
 			@Override
-			public boolean isActive() {
+			public Boolean isActive() {
 				return true;
 			}
 		}));
@@ -521,6 +521,11 @@ public class MainController {
 		try {
 			WatchService watcher = FileSystems.getDefault().newWatchService();
 			Path dir = Paths.get(Main.POOL_PATH);
+			// create if d'nt exists
+			if(!dir.toFile().exists()) {
+				dir.toFile().mkdirs();
+			}
+			
 			dir.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
 			Thread t = new Thread(()->{
 				while (true) {
@@ -534,7 +539,7 @@ public class MainController {
 				    for (WatchEvent<?> event : key.pollEvents()) {
 				        // get event type
 				        WatchEvent.Kind<?> kind = event.kind();
-				        // новое сообщение
+				        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				        if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 					        // get file name
 					        @SuppressWarnings("unchecked")
@@ -549,7 +554,7 @@ public class MainController {
 					        }
 				        }
 				    }
-			        // проверка старых фалов
+			        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 			        try {
 						String[] files = dir.toFile().list((d, name)->{
 							if(name.startsWith("mess")) return true; 

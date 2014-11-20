@@ -38,7 +38,7 @@ public class DemoNetService implements NetService {
 	}
 
 	@Override
-	public void postData(Message message, Image img) {
+	public void postData(Message message, Image img)  throws Exception {
 		log.info("data posted "+message);
 	}
 

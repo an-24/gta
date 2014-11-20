@@ -14,6 +14,6 @@ public interface NetService {
 	public User connect(String user, String password) throws Exception;
 	public void ping(Handler<NetState> handler);
 	public List<Team> getTeams();
-	public void postData(Message message, Image img);
+	public void postData(Message message, Image img) throws Exception;
 
 }

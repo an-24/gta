@@ -1,22 +1,13 @@
 package biz.gelicon.gta;
 	
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -25,11 +16,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+
 import org.controlsfx.dialog.Dialogs;
 import org.jnativehook.GlobalScreen;
 
 import biz.gelicon.gta.utils.LogHandler;
 import biz.gelicon.gta.utils.UTF8Control;
+
+import com.apple.eawt.AppEvent.AppForegroundEvent;
+import com.apple.eawt.AppEvent.AppReOpenedEvent;
 
 
 public class Main extends Application {
@@ -44,7 +40,7 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			this.primaryStage = primaryStage;
+			Main.primaryStage = primaryStage;
 			
 			settings = new Properties();
 			settings.load(new FileInputStream("gta.properties"));
@@ -53,8 +49,13 @@ public class Main extends Application {
 
 			// skip org.jnativehook log
 			Logger log = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+			log.setUseParentHandlers(false);
 			log.getParent().removeHandler(log.getParent().getHandlers()[0]);
 			log.getParent().addHandler(new LogHandler());
+			
+			if(System.getProperty("os.name").startsWith("Mac")) {
+				macOSExt();
+			}
 
 			lbundle = ResourceBundle.getBundle("biz.gelicon.gta.bundles.strings", Locale.getDefault(), new UTF8Control());
 			Parent root = (Parent)FXMLLoader.load(getClass().getResource("forms/Main.fxml"),lbundle);
@@ -76,6 +77,38 @@ public class Main extends Application {
 		
 			e.printStackTrace();
 		}
+	}
+
+	@SuppressWarnings("restriction")
+	private void macOSExt() throws IOException {
+		BufferedImage aboutImage = ImageIO.read(Main.class.getResourceAsStream("resources/about.png"));
+		com.apple.eawt.Application app = com.apple.eawt.Application.getApplication();
+		app.setDockIconImage(aboutImage);
+		app.addAppEventListener(new com.apple.eawt.AppForegroundListener(){
+
+			@Override
+			public void appMovedToBackground(AppForegroundEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void appRaisedToForeground(AppForegroundEvent e) {
+				Platform.runLater(()->{
+					primaryStage.show();
+				});
+			}
+			
+		});
+		app.addAppEventListener(new com.apple.eawt.AppReOpenedListener() {
+
+			@Override
+			public void appReOpened(AppReOpenedEvent e) {
+				Platform.runLater(()->{
+					primaryStage.show();
+				});
+			}
+		});
 	}
 
 	public static void main(String[] args) {
@@ -124,4 +157,5 @@ public class Main extends Application {
 	public static Stage getPrimaryStage() {
 		return primaryStage;
 	}
+
 }

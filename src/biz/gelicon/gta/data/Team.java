@@ -1,26 +1,28 @@
 package biz.gelicon.gta.data;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import biz.gelicon.gta.view.NodeView;
 
+@XmlRootElement
 public class Team implements NodeView {
-	private static DateTimeFormatter dtformat = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+	private static SimpleDateFormat dtformat = new SimpleDateFormat("dd.mm.yyyyy");
 	
 	private String name;
 	private boolean active;
 	private List<Person> persons;
-	private LocalDate createDate;
-	private int limit;
-	private int workedOfDay;
-	private int workedOfWeek;
-	private int workedOfMonth;
-	private int workedOfBeginProject;
+	private Date createDate;
+	private Integer limit;
+	private Integer workedOfDay;
+	private Integer workedOfWeek;
+	private Integer workedOfMonth;
+	private Integer workedOfBeginProject;
 	
 
 	public Team() {
@@ -31,7 +33,7 @@ public class Team implements NodeView {
 		this.persons =persons;
 	}
 
-	Team(String name, List<Person> persons, LocalDate createDate) {
+	Team(String name, List<Person> persons, Date createDate) {
 		this(name,persons);
 		this.createDate = createDate;
 	}
@@ -44,7 +46,7 @@ public class Team implements NodeView {
 		this.persons = persons;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 	public void setActive(boolean active) {
@@ -54,13 +56,13 @@ public class Team implements NodeView {
 		return name;
 	}
 
-	public LocalDate getCreateDate() {
+	public Date getCreateDate() {
 		return createDate;
 	}
 	
 	public static List<Team> getDemoTeams() {
 		List<Team> tl = new LinkedList<Team>();
-		tl.add(new Team("Dream Team", Person.getDemoPersons(), LocalDate.now()));
+		tl.add(new Team("Dream Team", Person.getDemoPersons(), new Date()));
 		tl.add(new Team("Clever Team", Person.getDemoPersons()));
 		tl.add(new Team("Grind Team", Person.getDemoPersons()));
 		//if(tl.size()>0)	tl.get(new Random().nextInt(tl.size())).setActive(true);
@@ -73,26 +75,26 @@ public class Team implements NodeView {
 	}
 
 	public String getCreateDateAsText() {
-		return createDate!=null?createDate.format(dtformat):null;
+		return createDate!=null?dtformat.format(createDate):null;
 	}
 
-	public int getLimit() {
+	public Integer getLimit() {
 		return limit;
 	}
 
-	public int getWorkedOfDay() {
+	public Integer getWorkedOfDay() {
 		return workedOfDay;
 	}
 
-	public int getWorkedOfWeek() {
+	public Integer getWorkedOfWeek() {
 		return workedOfWeek;
 	}
 
-	public int getWorkedOfMonth() {
+	public Integer getWorkedOfMonth() {
 		return workedOfMonth;
 	}
 
-	public int getWorkedOfBeginProject() {
+	public Integer getWorkedOfBeginProject() {
 		return workedOfBeginProject;
 	}
 
