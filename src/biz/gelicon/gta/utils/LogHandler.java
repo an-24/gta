@@ -12,7 +12,7 @@ public class LogHandler extends ConsoleHandler {
 	public void publish(LogRecord record) {
 		// skip org.jnativehook log
 		if(record.getLoggerName().equals(GlobalScreen.class.getPackage().getName()) &&
-				record.getLevel()==Level.INFO) return;
+				(record.getLevel()==Level.INFO || record.getLevel()==Level.WARNING)) return;
 		super.publish(record);
 	}
 

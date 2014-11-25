@@ -67,7 +67,7 @@ public class WorkNetService implements NetService {
 
 	@Override
 	public void ping(Handler<NetState> handler) {
-/*	    try {
+	    try {
 			WebTarget target = client.target(new URI(url));
 		    Response result = target.path("ping")
 			    	.request(MediaType.APPLICATION_JSON_TYPE)
@@ -88,7 +88,7 @@ public class WorkNetService implements NetService {
 				log.log(Level.SEVERE, e1.getMessage(), e1);
 			}
 		};
-*/	}
+	}
 
 	@Override
 	public List<Team> getTeams() {

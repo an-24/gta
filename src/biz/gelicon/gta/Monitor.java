@@ -66,7 +66,6 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 	public static Monitor startMonitor(User currentUser, Team team,  Handler<Void> afterPost) throws Exception {
 		Monitor m = new Monitor(currentUser, team, afterPost);
 		m.startTimer();
-		GlobalScreen.registerNativeHook();
 		GlobalScreen.getInstance().addNativeKeyListener(m);
 		GlobalScreen.getInstance().addNativeMouseListener(m);
 		GlobalScreen.getInstance().addNativeMouseMotionListener(m);
@@ -86,7 +85,6 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 			GlobalScreen.getInstance().removeNativeMouseListener(this);
 			GlobalScreen.getInstance().removeNativeMouseMotionListener(this);
 			GlobalScreen.getInstance().removeNativeMouseWheelListener(this);
-			GlobalScreen.unregisterNativeHook();
 			try {
 				if(capture==null) screenshot();
 				dtFinish = new Date();
@@ -163,7 +161,7 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 		capture = null;
 	}
 	
-	public void immediatelyPostData(File file, boolean clean) throws Exception {
+	public static void immediatelyPostData(File file, boolean clean) throws Exception {
 		// read message
 		JAXBContext context = initJaxb(Message.class);
 		Unmarshaller jaxb = context.createUnmarshaller();
@@ -181,7 +179,7 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 	}
 
 
-	private JAXBContext initJaxb(Class cls) throws JAXBException {
+	private static JAXBContext initJaxb(Class cls) throws JAXBException {
 		 JAXBContext context = JAXBContext.newInstance(cls);
 		 return context;
 	}

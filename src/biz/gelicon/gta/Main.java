@@ -3,10 +3,12 @@ package biz.gelicon.gta;
 import java.awt.SystemTray;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Application;
@@ -21,6 +23,7 @@ import javax.imageio.ImageIO;
 import org.controlsfx.dialog.Dialogs;
 import org.jnativehook.GlobalScreen;
 
+import biz.gelicon.gta.forms.MainController;
 import biz.gelicon.gta.utils.LogHandler;
 import biz.gelicon.gta.utils.UTF8Control;
 
@@ -36,6 +39,7 @@ public class Main extends Application {
     private static final Logger log = Logger.getLogger("gta");
 	public static final String POOL_PATH = "pool";
     private static Stage primaryStage;
+	private static MainController maincontroller;
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -44,6 +48,8 @@ public class Main extends Application {
 			
 			settings = new Properties();
 			settings.load(new FileInputStream("gta.properties"));
+			
+			GlobalScreen.registerNativeHook();
 			
 			// skip org.jnativehook log
 			Logger log = Logger.getLogger(GlobalScreen.class.getPackage().getName());
@@ -56,7 +62,10 @@ public class Main extends Application {
 			}
 
 			lbundle = ResourceBundle.getBundle("biz.gelicon.gta.bundles.strings", Locale.getDefault(), new UTF8Control());
-			Parent root = (Parent)FXMLLoader.load(getClass().getResource("forms/Main.fxml"),lbundle);
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("forms/Main.fxml"),lbundle);
+			//Parent root = (Parent)FXMLLoader.load(getClass().getResource("forms/Main.fxml"),lbundle);
+			Parent root = (Parent)loader.load();
+			maincontroller = (MainController)loader.getController();
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
@@ -117,6 +126,15 @@ public class Main extends Application {
 		return settings.getProperty(key);
 	}
 
+	public static void setProperty(String key, String value) {
+		settings.setProperty(key,value);
+		try {
+			settings.store(new FileOutputStream("gta.properties"),"Gelicon Team App properties");
+		} catch (Exception e) {
+			log.log(Level.SEVERE,e.getMessage(),e);
+		}
+	}
+
 	public static ResourceBundle getResources() {
 		return lbundle;
 	}
@@ -146,7 +164,8 @@ public class Main extends Application {
 	}
 	
 	public static void quit() {
-		System.runFinalization();
+		GlobalScreen.unregisterNativeHook();
+		maincontroller.disconnect();
     	Platform.exit();
     	System.exit(0);
 	}

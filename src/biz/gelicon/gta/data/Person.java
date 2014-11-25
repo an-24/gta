@@ -15,6 +15,7 @@ public class Person  implements NodeView {
 	private String nic;
 	private String post;
 	private Boolean active;
+	private Integer limit;
 	private Team team;
 	
 	public Person() {
@@ -62,6 +63,10 @@ public class Person  implements NodeView {
 	@XmlTransient
 	public Team getTeam() {
 		return team;
+	}
+
+	public Integer getLimit() {
+		return limit;
 	}
 
 }

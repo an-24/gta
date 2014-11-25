@@ -12,8 +12,10 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,7 +23,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -39,10 +40,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableCell;
-import javafx.scene.control.TreeTableColumn;
-import javafx.scene.control.TreeTableColumn.CellDataFeatures;
-import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
@@ -183,6 +180,11 @@ public class MainController {
 			public Boolean isActive() {
 				return true;
 			}
+
+			@Override
+			public Integer getId() {
+				return -1;
+			}
 		}));
 
 		TableColumn<Pair<String, String>, String> cKey = new TableColumn<>(
@@ -261,6 +263,7 @@ public class MainController {
 			});
 
 		miAbout.setOnAction(e -> {
+			AboutController.showModal(root.getScene().getWindow());
 			// TODO about
 		});
 
@@ -316,6 +319,9 @@ public class MainController {
 					Platform.runLater(() -> {
 						lCountdown.setText(resources
 								.getString("massage-postdata-succ"));
+						//refresh teams
+						updateTree(con.getTeams());
+						updatePropertySheet();
 					});
 					countDown = Monitor.MONITOR_PERIOD / 1000 / 60;
 				});
@@ -335,7 +341,7 @@ public class MainController {
 				countDown--;
 			}
 		}, 0, Monitor.MONITOR_COUNTDOWN);
-
+		
 		updatePropertySheet();
 		updateTree();
 		updateCaption();
@@ -379,6 +385,22 @@ public class MainController {
 		});
 	}
 
+	private void updateTree(List<Team> teams) {
+		Map<Integer,Team> tmap = new HashMap<>();
+		for (Team t : teams) {
+			tmap.put(t.getId(), t);
+		}
+		tree.getRoot().getChildren().forEach(t -> {
+			Team newteam = tmap.get(t.getValue().getId());
+			if(newteam!=null) {
+				t.setValue(null);
+				t.setValue(newteam);
+			} else {
+				tree.getRoot().getChildren().remove(t);
+			}
+		});
+	}
+	
 	private void updateTree() {
 		tree.getRoot().getChildren().forEach(t -> {
 			NodeView nv = t.getValue();
@@ -445,7 +467,7 @@ public class MainController {
 	private ObservableList<Pair<String, String>> makeTimeItems(Team team) {
 		List<Pair<String, String>> teamTimes = new ArrayList<>();
 		teamTimes.add(new Pair<String, String>(resources.getString("limit"),
-				String.valueOf(team.getLimit())));
+				String.valueOf(intValueOf(team.getLimit()))));
 		teamTimes.add(new Pair<String, String>(resources
 				.getString("work-of-day"), intValueOf(team.getWorkedOfDay())));
 		teamTimes
@@ -494,6 +516,10 @@ public class MainController {
 						.getString("err-invalid-user-or-password"));
 			safeUserName = currentUser.getNic();
 			networkAvailable = true;
+			Main.setProperty("user", safeUserName);
+
+			// try send files in pool
+			immediatelyPostData(Paths.get(Main.POOL_PATH));
 
 			if (timerPing != null)
 				timerPing.cancel();
@@ -530,7 +556,7 @@ public class MainController {
 			updateStatus();
 			updateTray();
 		}, loginController -> {
-			loginController.getTfName().setText(safeUserName);
+			loginController.getTfName().setText(Main.getProperty("user"));
 		});
 	}
 
@@ -570,18 +596,7 @@ public class MainController {
 						}
 					}
 				}
-				// list in directory
-				String[] files = dir.toFile().list((d, name) -> {
-					if (name.startsWith("mess"))
-						return true;
-					return false;
-				});
-				for (int i = 0; i < files.length; i++)
-					try {
-						immediatelyPostData(files[i]);
-					} catch (Exception e) {
-						log.log(Level.SEVERE, e.getMessage(), e);
-					}
+				immediatelyPostData(dir);
 				// IMPORTANT: The key must be reset after processed
 				boolean valid = key.reset();
 				if (!valid) {
@@ -598,9 +613,24 @@ public class MainController {
 
 	}
 
+	private void immediatelyPostData(Path dir) {
+		// list in directory
+		String[] files = dir.toFile().list((d, name) -> {
+			if (name.startsWith("mess"))
+				return true;
+			return false;
+		});
+		for (int i = 0; i < files.length; i++)
+			try {
+				immediatelyPostData(files[i]);
+			} catch (Exception e) {
+				log.log(Level.SEVERE, e.getMessage(), e);
+			}
+	}
+
 	private void immediatelyPostData(String fname) throws Exception {
 		File fmessage = new File(Main.POOL_PATH, fname);
-		currentMonitor.immediatelyPostData(fmessage, true);
+		Monitor.immediatelyPostData(fmessage, true);
 	}
 
 	protected void reconnect() {
@@ -617,11 +647,14 @@ public class MainController {
 		}
 	}
 
-	private void disconnect() {
+	public void disconnect() {
 		if (currentUser == null)
 			return;
-		if (processTeam != null)
+		if (processTeam != null) {
 			finishProcessTeam(processTeam);
+		}	
+		// try send files in pool
+		immediatelyPostData(Paths.get(Main.POOL_PATH));
 
 		if (timerPing != null)
 			timerPing.cancel();
@@ -633,12 +666,6 @@ public class MainController {
 		updatePropertySheet();
 		updateStatus();
 		updateTray();
-	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		disconnect();
-		super.finalize();
 	}
 	
 	public class TreeCellImpl extends TreeCell<NodeView> {

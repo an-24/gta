@@ -35,4 +35,9 @@ public class Pair<L, R> implements Serializable{
 		this.right = right;
 	}
 
+	@Override
+	public String toString() {
+		return "Pair [left=" + left + ", right=" + right + "]";
+	}
+
 }
