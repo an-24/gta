@@ -4,12 +4,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import biz.gelicon.gta.view.NodeView;
 
+@XmlRootElement
 public class Person  implements NodeView {
+	private Integer id;
 	private String nic;
 	private String post;
 	private Boolean active;
+	private Team team;
+	
+	public Person() {
+	}
 
 	protected Person(String nic, String post) {
 		this.nic = nic;
@@ -44,6 +53,15 @@ public class Person  implements NodeView {
 	@Override
 	public String getText() {
 		return nic+"#"+post;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	@XmlTransient
+	public Team getTeam() {
+		return team;
 	}
 
 }

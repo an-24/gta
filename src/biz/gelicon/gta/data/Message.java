@@ -5,13 +5,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Message {
-	private int key = 0;
-	private int mouse = 0;
-	private int mouseMove = 0;
+	private Integer key = 0;
+	private Integer mouse = 0;
+	private Integer mouseMove = 0;
 	private Date dtBegin;
 	private Date dtFinish;
 	private String captureFileName;
-	private String team;
+	private String teamName;
 
 	public Message() {
 	}
@@ -26,27 +26,27 @@ public class Message {
 		this.dtFinish = dtFinish;
 	}
 
-	public int getKey() {
+	public Integer getKey() {
 		return key;
 	}
 
-	public void setKey(int key) {
+	public void setKey(Integer key) {
 		this.key = key;
 	}
 
-	public int getMouse() {
+	public Integer getMouse() {
 		return mouse;
 	}
 
-	public void setMouse(int mouse) {
+	public void setMouse(Integer mouse) {
 		this.mouse = mouse;
 	}
 
-	public int getMouseMove() {
+	public Integer getMouseMove() {
 		return mouseMove;
 	}
 
-	public void setMouseMove(int mouseMove) {
+	public void setMouseMove(Integer mouseMove) {
 		this.mouseMove = mouseMove;
 	}
 
@@ -74,12 +74,12 @@ public class Message {
 		this.captureFileName = captureFileName;
 	}
 
-	public String getTeam() {
-		return team;
+	public String getTeamName() {
+		return teamName;
 	}
 
-	public void setTeam(String team) {
-		this.team = team;
+	public void setTeamName(String team) {
+		this.teamName = team;
 	}
 
 }

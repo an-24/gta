@@ -1,13 +1,10 @@
 package biz.gelicon.gta.utils;
 
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 import org.jnativehook.GlobalScreen;
-
-import com.fasterxml.jackson.databind.Module.SetupContext;
 
 public class LogHandler extends ConsoleHandler {
 

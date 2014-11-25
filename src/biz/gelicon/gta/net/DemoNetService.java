@@ -1,9 +1,6 @@
 package biz.gelicon.gta.net;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.time.LocalDate;
-import java.util.Date;
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,7 +35,7 @@ public class DemoNetService implements NetService {
 	}
 
 	@Override
-	public void postData(Message message, Image img)  throws Exception {
+	public void postData(Message message, File img)  throws Exception {
 		log.info("data posted "+message);
 	}
 

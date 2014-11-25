@@ -1,13 +1,9 @@
 package biz.gelicon.gta;
 
-import java.awt.AWTException;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Random;
 import java.util.Timer;
@@ -15,14 +11,14 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
+
 import javax.imageio.ImageIO;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
 
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -67,9 +63,10 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 	}
 
 
-	public static Monitor startMonitor(User currentUser, Team team,  Handler<Void> afterPost) {
+	public static Monitor startMonitor(User currentUser, Team team,  Handler<Void> afterPost) throws Exception {
 		Monitor m = new Monitor(currentUser, team, afterPost);
 		m.startTimer();
+		GlobalScreen.registerNativeHook();
 		GlobalScreen.getInstance().addNativeKeyListener(m);
 		GlobalScreen.getInstance().addNativeMouseListener(m);
 		GlobalScreen.getInstance().addNativeMouseMotionListener(m);
@@ -89,6 +86,7 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 			GlobalScreen.getInstance().removeNativeMouseListener(this);
 			GlobalScreen.getInstance().removeNativeMouseMotionListener(this);
 			GlobalScreen.getInstance().removeNativeMouseWheelListener(this);
+			GlobalScreen.unregisterNativeHook();
 			try {
 				if(capture==null) screenshot();
 				dtFinish = new Date();
@@ -156,7 +154,7 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 		jaxb.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		
 		Message message = new Message(dtBegin, dtFinish,key, mouse, mouseMove,imgfile.getName());
-		message.setTeam(currentTeam.getName());
+		message.setTeamName(currentTeam.getName());
 		jaxb.marshal(message, File.createTempFile("mess", ".tmp", poolpath));
 		if(afterPost!=null) afterPost.handle(null);
 		key=0;
@@ -172,10 +170,9 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 		Message message = (Message) jaxb.unmarshal(file);
 		// read image
 		File imgfile = new File(Main.POOL_PATH,message.getCaptureFileName());
-		Image img = ImageIO.read(imgfile);
 		//post
 		NetService con = ConnectionFactory.getConnection();
-		con.postData(message,img);
+		con.postData(message,imgfile);
 		// delete file
 		if(clean) {
 			file.delete();

@@ -45,8 +45,6 @@ public class Main extends Application {
 			settings = new Properties();
 			settings.load(new FileInputStream("gta.properties"));
 			
-			GlobalScreen.registerNativeHook();
-
 			// skip org.jnativehook log
 			Logger log = Logger.getLogger(GlobalScreen.class.getPackage().getName());
 			log.setUseParentHandlers(false);
@@ -148,7 +146,6 @@ public class Main extends Application {
 	}
 	
 	public static void quit() {
-		GlobalScreen.unregisterNativeHook();
 		System.runFinalization();
     	Platform.exit();
     	System.exit(0);

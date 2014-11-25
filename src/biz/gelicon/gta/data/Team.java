@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Random;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import biz.gelicon.gta.view.NodeView;
 
 @XmlRootElement
 public class Team implements NodeView {
-	private static SimpleDateFormat dtformat = new SimpleDateFormat("dd.mm.yyyyy");
+	private static SimpleDateFormat dtformat = new SimpleDateFormat("dd.MM.yyyy");
 	
+	private Integer id;
 	private String name;
 	private boolean active;
 	private List<Person> persons;
@@ -46,6 +48,7 @@ public class Team implements NodeView {
 		this.persons = persons;
 	}
 
+	@XmlTransient
 	public Boolean isActive() {
 		return active;
 	}
@@ -96,6 +99,10 @@ public class Team implements NodeView {
 
 	public Integer getWorkedOfBeginProject() {
 		return workedOfBeginProject;
+	}
+
+	public Integer getId() {
+		return id;
 	}
 
 }

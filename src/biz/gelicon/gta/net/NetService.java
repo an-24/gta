@@ -1,6 +1,6 @@
 package biz.gelicon.gta.net;
 
-import java.awt.Image;
+import java.io.File;
 import java.util.List;
 
 import biz.gelicon.gta.User;
@@ -14,6 +14,6 @@ public interface NetService {
 	public User connect(String user, String password) throws Exception;
 	public void ping(Handler<NetState> handler);
 	public List<Team> getTeams();
-	public void postData(Message message, Image img) throws Exception;
+	public void postData(Message message, File imgfile) throws Exception;
 
 }
