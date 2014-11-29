@@ -27,9 +27,6 @@ import biz.gelicon.gta.forms.MainController;
 import biz.gelicon.gta.utils.LogHandler;
 import biz.gelicon.gta.utils.UTF8Control;
 
-import com.apple.eawt.AppEvent.AppForegroundEvent;
-import com.apple.eawt.AppEvent.AppReOpenedEvent;
-
 
 public class Main extends Application {
 
@@ -94,13 +91,13 @@ public class Main extends Application {
 		app.addAppEventListener(new com.apple.eawt.AppForegroundListener(){
 
 			@Override
-			public void appMovedToBackground(AppForegroundEvent e) {
+			public void appMovedToBackground(com.apple.eawt.AppEvent.AppForegroundEvent e) {
 				// TODO Auto-generated method stub
 				
 			}
 
 			@Override
-			public void appRaisedToForeground(AppForegroundEvent e) {
+			public void appRaisedToForeground(com.apple.eawt.AppEvent.AppForegroundEvent e) {
 				Platform.runLater(()->{
 					primaryStage.show();
 				});
@@ -110,7 +107,7 @@ public class Main extends Application {
 		app.addAppEventListener(new com.apple.eawt.AppReOpenedListener() {
 
 			@Override
-			public void appReOpened(AppReOpenedEvent e) {
+			public void appReOpened(com.apple.eawt.AppEvent.AppReOpenedEvent e) {
 				Platform.runLater(()->{
 					primaryStage.show();
 				});

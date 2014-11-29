@@ -1,0 +1,1 @@
+mvn install:install-file -Dfile=AppleJavaExtensions.jar -DgroupId=com.apple -DartifactId=eawt -Dversion=1.16 -Dpackaging=jar -DgeneratePom=true

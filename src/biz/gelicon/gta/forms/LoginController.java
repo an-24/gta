@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.util.Pair;
 
+@SuppressWarnings("restriction")
 public class LoginController {
 
     @FXML
