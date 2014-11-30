@@ -620,6 +620,7 @@ public class MainController {
 				return true;
 			return false;
 		});
+		if(files!=null)
 		for (int i = 0; i < files.length; i++)
 			try {
 				immediatelyPostData(files[i]);
