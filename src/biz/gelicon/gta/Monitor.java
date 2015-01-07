@@ -38,7 +38,7 @@ import biz.gelicon.gta.net.NetService;
 import biz.gelicon.gta.utils.Handler;
 
 public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMouseMotionListener, NativeMouseWheelListener {
-	public static final int MONITOR_PERIOD = 1000*60*10;
+	public static final int MONITOR_PERIOD = 1000*60*1;
 	public static final int MONITOR_PING = 1000*5;
 	public static final int MONITOR_COUNTDOWN = 1000*60;
 	
@@ -166,7 +166,8 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 		capture = null;
 	}
 	
-	public static void immediatelyPostData(File file, boolean clean) throws Exception {
+	synchronized public static void immediatelyPostData(File file, boolean clean) throws Exception {
+		if(!file.exists()) return;
 		// read message
 		JAXBContext context = initJaxb(Message.class);
 		Unmarshaller jaxb = context.createUnmarshaller();

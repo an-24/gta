@@ -392,7 +392,9 @@ public class MainController {
 		}
 		tree.getRoot().getChildren().forEach(t -> {
 			Team newteam = tmap.get(t.getValue().getId());
+			Team oldteam = (Team)t.getValue();
 			if(newteam!=null) {
+				newteam.setActive(oldteam.isActive());
 				t.setValue(null);
 				t.setValue(newteam);
 			} else {
