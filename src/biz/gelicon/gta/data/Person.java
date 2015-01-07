@@ -17,7 +17,25 @@ public class Person  implements NodeView {
 	private Boolean active;
 	private Integer limit;
 	private Team team;
+	private Boolean internal;
+	private Boolean manager;
 	
+	public Boolean getManager() {
+		return manager;
+	}
+
+	public void setManager(Boolean manager) {
+		this.manager = manager;
+	}
+
+	public Boolean getInternal() {
+		return internal;
+	}
+
+	public void setInternal(Boolean internal) {
+		this.internal = internal;
+	}
+
 	public Person() {
 	}
 

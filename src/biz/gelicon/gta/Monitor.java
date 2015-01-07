@@ -4,8 +4,10 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -116,8 +118,11 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 				}
 			}
 		}, MONITOR_PERIOD, MONITOR_PERIOD);
-		dtBegin = new Date();
-		dtFinish = new Date(dtBegin.getTime()+MONITOR_PERIOD);  
+		
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		dtBegin = cal.getTime();
+		cal.add(Calendar.MILLISECOND, MONITOR_PERIOD);
+		dtFinish = cal.getTime();  
 		
 		timerScreenshot = new Timer();
 		doTimerScreenshot(0);
