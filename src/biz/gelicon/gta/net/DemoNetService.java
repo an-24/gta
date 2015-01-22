@@ -39,4 +39,9 @@ public class DemoNetService implements NetService {
 		log.info("data posted "+message);
 	}
 
+	@Override
+	public void checkLimits(Team team) throws Exception {
+		log.info("check limits");
+	}
+
 }

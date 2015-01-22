@@ -66,6 +66,10 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 
 
 	public static Monitor startMonitor(User currentUser, Team team,  Handler<Void> afterPost) throws Exception {
+		// проверяем лимиты
+		NetService con = ConnectionFactory.getConnection();
+		con.checkLimits(team);
+		
 		Monitor m = new Monitor(currentUser, team, afterPost);
 		m.startTimer();
 		GlobalScreen.getInstance().addNativeKeyListener(m);

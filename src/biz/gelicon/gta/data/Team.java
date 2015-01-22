@@ -20,10 +20,10 @@ public class Team implements NodeView {
 	private List<Person> persons;
 	private Date createDate;
 	private Integer limit;
-	private Integer workedOfDay;
-	private Integer workedOfWeek;
-	private Integer workedOfMonth;
-	private Integer workedOfBeginProject;
+	private Double workedOfDay;
+	private Double workedOfWeek;
+	private Double workedOfMonth;
+	private Double workedOfBeginProject;
 	
 
 	public Team() {
@@ -84,19 +84,19 @@ public class Team implements NodeView {
 		return limit;
 	}
 
-	public Integer getWorkedOfDay() {
+	public Double getWorkedOfDay() {
 		return workedOfDay;
 	}
 
-	public Integer getWorkedOfWeek() {
+	public Double getWorkedOfWeek() {
 		return workedOfWeek;
 	}
 
-	public Integer getWorkedOfMonth() {
+	public Double getWorkedOfMonth() {
 		return workedOfMonth;
 	}
 
-	public Integer getWorkedOfBeginProject() {
+	public Double getWorkedOfBeginProject() {
 		return workedOfBeginProject;
 	}
 

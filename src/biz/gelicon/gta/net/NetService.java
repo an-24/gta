@@ -15,5 +15,6 @@ public interface NetService {
 	public void ping(Handler<NetState> handler);
 	public List<Team> getTeams();
 	public void postData(Message message, File imgfile) throws Exception;
+	public void checkLimits(Team team) throws Exception;
 
 }
