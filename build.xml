@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="gta" default="buildall" basedir=".">
+	
+	<property name="bin" location="target"/>
+	<property name="dist" location="build"/>
+		
+  	<target name="buildall" description="Build for all platform" depends="clean,macos,windows">
+  	</target>
+  	
+  	<target name="clean" description="Clean all">
+		<delete dir="${dist}/bundles"/>
+  	</target>
+		
+  	<target name="windows" description="Build for windows">
+  		<property name="dist.base" location="${dist}/bundles/windows"/>
+  		<property name="dist.lib" location="${dist.base}/lib"/>
+   		<property name="dist.jre" location="${dist.base}/jre"/>
+		<mkdir dir="${dist.lib}"/>
+		<copy todir="${dist.lib}">
+			<fileset dir="${bin}/lib">
+				<filename name="*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.base}">
+			<fileset dir="${bin}">
+				<filename name="*.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.base}" file="${basedir}/gta.properties"/>
+		<copy todir="${java.home}">
+			<fileset dir="${bin}">
+				<filename name="*.jar"/>
+			</fileset>
+		</copy>
+			
+  	</target>
+	
+  	<target name="macos" description="Build for macos">
+  		<!--TODO-->
+  	</target>
+
+</project>
