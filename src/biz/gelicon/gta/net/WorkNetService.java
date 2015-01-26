@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,17 +26,22 @@ import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
 
+import biz.gelicon.gta.Main;
 import biz.gelicon.gta.User;
 import biz.gelicon.gta.data.Message;
 import biz.gelicon.gta.data.Team;
+import biz.gelicon.gta.server.wrappers.TeamWrapper;
+import biz.gelicon.gta.server.wrappers.UserWrapper;
 import biz.gelicon.gta.utils.Handler;
 import biz.gelicon.gta.utils.MessageWrapper;
+import biz.gelicon.gta.utils.Pair;
 
 public class WorkNetService implements NetService {
 	private Logger log = Logger.getLogger("gta");
 	private String url;
 	private Client client;
 	private String token;
+	private ResourceBundle resources = Main.getResources();
 
 	public WorkNetService(String url) {
 		this.url = url;
@@ -134,6 +140,34 @@ public class WorkNetService implements NetService {
 	    if(result.getStatus() != Status.OK.getStatusCode()) 
 	    	throw new Exception(result.getStatus()+": "+Status.fromStatusCode(result.getStatus()).getReasonPhrase());
 		log.info("Data posted in server");
+	}
+
+	@Override
+	public void checkLimits(Team team) throws Exception {
+		WebTarget target = client.target(new URI(url));
+		Response result;
+		// лимит команды
+		TeamWrapper arg1 = new TeamWrapper(token,team.getId());
+	    result = target.path("timing/checkteamlimit")
+		    	.request(MediaType.APPLICATION_JSON_TYPE)
+		    	.accept(MediaType.APPLICATION_JSON_TYPE)
+		    	.post(Entity.json(arg1));
+	    if(result.getStatus() != Status.OK.getStatusCode()) 
+	    	throw new Exception(result.getStatus()+": "+Status.fromStatusCode(result.getStatus()).getReasonPhrase());
+	    Boolean r1 = result.readEntity(Boolean.class);
+		if(!r1)
+			throw new Exception(resources.getString("teamlimitex"));
+		// лимит пользователя
+		UserWrapper arg2 = new UserWrapper(token,team.getId(),null); // null- значит проверяем текущего пользователя
+	    result = target.path("timing/checkuserlimit")
+		    	.request(MediaType.APPLICATION_JSON_TYPE)
+		    	.accept(MediaType.APPLICATION_JSON_TYPE)
+		    	.post(Entity.json(arg2));
+	    if(result.getStatus() != Status.OK.getStatusCode()) 
+	    	throw new Exception(result.getStatus()+": "+Status.fromStatusCode(result.getStatus()).getReasonPhrase());
+	    Boolean r2 = result.readEntity(Boolean.class);
+		if(!r2)
+			throw new Exception(resources.getString("userlimitex"));
 	}
 
 }

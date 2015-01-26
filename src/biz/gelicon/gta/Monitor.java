@@ -38,7 +38,7 @@ import biz.gelicon.gta.net.NetService;
 import biz.gelicon.gta.utils.Handler;
 
 public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMouseMotionListener, NativeMouseWheelListener {
-	public static final int MONITOR_PERIOD = 1000*60*1;
+	public static final int MONITOR_PERIOD = 1000*60*10;
 	public static final int MONITOR_PING = 1000*5;
 	public static final int MONITOR_COUNTDOWN = 1000*60;
 	
@@ -66,6 +66,10 @@ public class Monitor implements NativeKeyListener, NativeMouseListener, NativeMo
 
 
 	public static Monitor startMonitor(User currentUser, Team team,  Handler<Void> afterPost) throws Exception {
+		// проверяем лимиты
+		NetService con = ConnectionFactory.getConnection();
+		con.checkLimits(team);
+		
 		Monitor m = new Monitor(currentUser, team, afterPost);
 		m.startTimer();
 		GlobalScreen.getInstance().addNativeKeyListener(m);

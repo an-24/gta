@@ -10,6 +10,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -319,6 +320,12 @@ public class MainController {
 					Platform.runLater(() -> {
 						lCountdown.setText(resources
 								.getString("massage-postdata-succ"));
+						new Timer().schedule(new TimerTask() {
+							@Override
+							public void run() {
+								updateCountDown();
+							}}, 10*1000);
+						
 						//refresh teams
 						updateTree(con.getTeams());
 						updatePropertySheet();
@@ -332,12 +339,7 @@ public class MainController {
 		timerCountDown.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				final int sCountDown = countDown;
-				Platform.runLater(() -> {
-					lCountdown.setText(String.format(
-							resources.getString("message-countdown"),
-							new Integer(sCountDown).toString()));
-				});
+				updateCountDown();
 				countDown--;
 			}
 		}, 0, Monitor.MONITOR_COUNTDOWN);
@@ -348,6 +350,15 @@ public class MainController {
 		updateTray();
 	}
 
+	private void updateCountDown() {
+		final int sCountDown = countDown;
+		Platform.runLater(() -> {
+			lCountdown.setText(String.format(
+					resources.getString("message-countdown"),
+					new Integer(sCountDown).toString()));
+		});
+	}
+
 	private void finishProcessTeam(Team team) {
 		if (team == null)
 			return;
@@ -356,7 +367,8 @@ public class MainController {
 		if (currentMonitor != null)
 			currentMonitor.stop();
 
-		timerCountDown.cancel();
+		if (timerCountDown != null)
+			timerCountDown.cancel();
 		timerCountDown = null;
 		lCountdown.setText("");
 
@@ -466,21 +478,28 @@ public class MainController {
 		return (v == null) ? "" : String.valueOf(v);
 	}
 
+	
+	private static DecimalFormat df = new DecimalFormat("#0.0");
+	
+	private static String doubleValueOf(Double v) {
+		return (v == null) ? "" : df.format(v);
+	}
+	
 	private ObservableList<Pair<String, String>> makeTimeItems(Team team) {
 		List<Pair<String, String>> teamTimes = new ArrayList<>();
 		teamTimes.add(new Pair<String, String>(resources.getString("limit"),
 				String.valueOf(intValueOf(team.getLimit()))));
 		teamTimes.add(new Pair<String, String>(resources
-				.getString("work-of-day"), intValueOf(team.getWorkedOfDay())));
+				.getString("work-of-day"), doubleValueOf(team.getWorkedOfDay())));
 		teamTimes
 				.add(new Pair<String, String>(resources
-						.getString("work-of-week"), intValueOf(team
+						.getString("work-of-week"), doubleValueOf(team
 						.getWorkedOfWeek())));
 		teamTimes.add(new Pair<String, String>(resources
 				.getString("work-of-month"),
-				intValueOf(team.getWorkedOfMonth())));
+				doubleValueOf(team.getWorkedOfMonth())));
 		teamTimes.add(new Pair<String, String>(resources
-				.getString("work-of-begin-project"), intValueOf(team
+				.getString("work-of-begin-project"), doubleValueOf(team
 				.getWorkedOfBeginProject())));
 		return FXCollections.observableList(teamTimes);
 	}
