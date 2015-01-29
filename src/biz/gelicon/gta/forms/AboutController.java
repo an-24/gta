@@ -48,7 +48,7 @@ public class AboutController {
 		bOk.setOnAction(e -> {
 			root.getScene().getWindow().hide();
 		});
-		ivLogo.setImage(new Image(Main.class.getResourceAsStream("resources/about.png")));
+		ivLogo.setImage(new Image(Main.class.getClassLoader().getResourceAsStream("about.png")));
 	}
 
 	public static void showModal(Window owner) {

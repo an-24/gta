@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="gta" default="buildall" basedir=".">
 	
+	<property name="gta-ver" value="0.1"/>
 	<property name="bin" location="target"/>
 	<property name="dist" location="build"/>
+	<property name="launch.dir" location="C:/Program Files/Launch4j"/>
+	<property name="inno.dir" location="C:/Program Files/Inno Setup 5"/>
+	
+	<taskdef name="jarbundler" 
+	         classname="net.sourceforge.jarbundler.JarBundler"/>	
 		
   	<target name="buildall" description="Build for all platform" depends="clean,macos,windows">
   	</target>
@@ -15,27 +21,53 @@
   		<property name="dist.base" location="${dist}/bundles/windows"/>
   		<property name="dist.lib" location="${dist.base}/lib"/>
    		<property name="dist.jre" location="${dist.base}/jre"/>
+  		
+		<delete dir="${dist.base}"/>
+  		
 		<mkdir dir="${dist.lib}"/>
+		<mkdir dir="${dist.jre}"/>
 		<copy todir="${dist.lib}">
 			<fileset dir="${bin}/lib">
 				<filename name="*.jar"/>
 			</fileset>
 		</copy>
-		<copy todir="${dist.base}">
-			<fileset dir="${bin}">
-				<filename name="*.jar"/>
-			</fileset>
-		</copy>
+		<copy todir="${dist.base}" file="${bin}/gta-${gta-ver}.jar"/>
 		<copy todir="${dist.base}" file="${basedir}/gta.properties"/>
-		<copy todir="${java.home}">
-			<fileset dir="${bin}">
-				<filename name="*.jar"/>
-			</fileset>
-		</copy>
-			
+		<copydir src="${java.home}" dest="${dist.jre}"/>
+  		<!-- launcher -->
+		<exec executable="${launch.dir}/launch4jc.exe" dir="${basedir}">
+		    <arg value="lancher.xml"/>
+		</exec>			
+  		<!-- Inno setup -->
+		<exec executable="${inno.dir}/iscc.exe" dir="${basedir}">
+		    <arg value="install-win.iss"/>
+		</exec>			
+  		
   	</target>
 	
   	<target name="macos" description="Build for macos">
+  		<property name="dist.base" location="${dist}/bundles/macos"/>
+		<delete dir="${dist.base}"/>
+		<mkdir dir="${dist.base}"/>
+
+		<copy todir="${dist.base}" file="${bin}/gta-${gta-ver}.jar"/>
+		<copy todir="${dist.base}" file="${basedir}/gta.properties"/>
+
+  		
+  		<jarbundler dir="${dist.base}"
+  		            name="Gta"
+  		            mainclass="biz.gelicon.gta.Main" 
+  					version="${gta-ver}"
+  					copyright="©2015, Jelicon JCC"
+  					icon="${basedir}/resources/Gta.icns"
+  					jvmversion="1.8+">
+  			<resourcefilelist dir="${basedir}" files="gta.properties"/>
+  		  	<jarfileset dir="${bin}/lib">
+  		    	<include name="**/*.jar" />
+  		  	</jarfileset>	
+  		  	<jarfilelist dir="${bin}" files="gta-${gta-ver}.jar"/>
+  		  	<jarfilelist dir="${basedir}/lib" files="AppleJavaExtensions.jar"/>
+  		</jarbundler>
   		<!--TODO-->
   	</target>
 

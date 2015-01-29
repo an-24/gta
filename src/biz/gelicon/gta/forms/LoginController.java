@@ -92,7 +92,7 @@ public class LoginController {
 		});
 		tfName.requestFocus();
 		
-		ivKeys.setImage(new Image(Main.class.getResourceAsStream("resources/keys.png")));
+		ivKeys.setImage(new Image(Main.class.getClassLoader().getResourceAsStream("keys.png")));
 	}
 
 	private void setHandler(Handler<Pair<String,String>> handler) {

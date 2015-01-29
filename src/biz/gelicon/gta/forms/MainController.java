@@ -271,9 +271,9 @@ public class MainController {
 		Platform.runLater(() -> {
 			updateCaption();
 			Stage mainWin = (Stage) root.getScene().getWindow();
+			
 			mainWin.getIcons().add(
-					new Image(MainController.class
-							.getResourceAsStream("../resources/about.png")));
+					new Image(Main.class.getClassLoader().getResourceAsStream("about.png")));
 			miConnect.fire();
 		});
 	}

@@ -28,10 +28,10 @@ public class GTATray {
 
 	GTATray() {
 		try {
-			imgInactive = ImageIO.read(Main.class.getResourceAsStream("resources/inactive.png"));
-			imgReady = ImageIO.read(Main.class.getResourceAsStream("resources/ready.png"));
-			imgActive = ImageIO.read(Main.class.getResourceAsStream("resources/active.png"));
-			imgNetNotAvaible = ImageIO.read(Main.class.getResourceAsStream("resources/netnotavaible.png"));
+			imgInactive = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("inactive.png"));
+			imgReady = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("ready.png"));
+			imgActive = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("active.png"));
+			imgNetNotAvaible = ImageIO.read(Main.class.getClassLoader().getResourceAsStream("netnotavaible.png"));
 
 			if (SystemTray.isSupported()) {
 				PopupMenu popup = new PopupMenu();
